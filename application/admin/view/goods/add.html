@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="{:config('admin_static')}/css/style.css" rel="stylesheet" type="text/css" />
+    <script language="JavaScript" src="{:config('admin_static')}/js/jquery.js"></script>
+    <script type="text/javascript" src="/static/plugins/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="/static/plugins/ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" src="/static/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <style>
+        .active{
+            border-bottom: solid 3px #66c9f3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="place">
+        <span>位置：</span>
+        <ul class="placeul">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">表单</a></li>
+        </ul>
+    </div>
+    <div class="formbody">
+        <div class="formtitle">
+            <span class="active">基本信息</span>
+            <span>商品属性信息</span>
+            <span>商品相册</span>
+            <span>商品描述</span>
+
+        </div>
+        <form action="" method="post" enctype="multipart/form-data">
+            <ul class="forminfo">
+                <li>
+                    <label>商品名称</label>
+                    <input name="goods_name" placeholder="请输入商品名称" type="text" class="dfinput" />
+                </li>
+                <li>
+                    <label>商品价格</label>
+                    <input name="goods_price" placeholder="请输入商品价格" type="text" class="dfinput" /><i></i>
+                </li>
+                <li>
+                    <label>商品库存</label>
+                    <input name="goods_number" placeholder="请输入商品数量" type="text" class="dfinput" />
+                </li>
+                <li>
+                    <label>商品分类</label>
+                    <select name="cat_id" class="dfinput">
+                        <option value="">请选择商品分类</option>
+                        {foreach name='cates' item='cate'}
+                            <option value="{$cate.cat_id}">{:str_repeat('&nbsp;',$cate.level)}{$cate.cat_name}</option>
+                        {/foreach}
+                    </select>
+                </li>
+
+                <li>
+                    <label>回收站</label>
+                    <input type="radio" name="is_delete" value="0" checked>否&nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="is_delete" value="1">是
+                </li>
+
+                <li>
+                    <label>是否上架</label>
+                    <input type="radio" name="is_sale" value="0">否&nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="is_sale" value="1" checked>是
+                </li>
+
+                <li>
+                    <label>是否新品</label>
+                    <input type="radio" name="is_new" value="0">否&nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="is_new" value="1" checked>是
+                </li>
+
+                <li>
+                    <label>是否热卖</label>
+                    <input type="radio" name="is_hot" value="0">否&nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="is_hot" value="1" checked>是
+                </li>
+                <li>
+                    <label>是否推荐</label>
+                    <input type="radio" name="is_best" value="0">否&nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="is_best" value="1" checked>是
+                </li>
+                
+            </ul>
+
+            <ul class="forminfo">
+                <li>
+                    <label>商品属性</label>
+                    <input name="" placeholder="请输入商品名称" type="text" class="dfinput" /><i>名称不能超过30个字符</i>
+                </li>
+            </ul>
+
+            <ul class="forminfo">
+                <li>
+                    <a href="javascript:;" onclick="cloneImg(this)">[+]</a>&nbsp;&nbsp;
+                    <input name="img[]" type="file"/>
+                </li>
+            </ul>
+
+            <ul class="forminfo">
+                <li>
+                    <label>商品详情</label>
+                    <textarea name="goods_desc" id="goods_desc" style="width: 800px; height: 400px"></textarea>
+                </li>
+
+            </ul>
+			<li>
+                    <label>&nbsp;</label>
+                    <input name="" id="btnSubmit" type="submit" class="btn" value="确认保存" />
+             </li>
+        </form>
+    </div>
+</body>
+<script>
+
+    // 克隆图片
+    function cloneImg(ele) {
+        // 获取a标签
+        var text = $(ele).html();
+        if (text == '[+]'){
+            // 值是[+]
+            // 克隆父元素li 并把a标签的[+] 变为[-]
+            var newLi = $(ele).parent().clone();
+            newLi.children('a').html('[-]');
+            // 清空已上传的文件
+            newLi.children('input').val('');
+            // 把newLi追加到当前元素的父元素后面
+            $(ele).parent().after(newLi);
+        }else {
+            //   值是[-]
+            $(ele).parent().remove();
+        }
+    }
+
+    // 富文本编辑器
+    var ue = UE.getEditor('goods_desc');
+
+    $(".formtitle span").click(function(event){
+        $(this).addClass('active').siblings("span").removeClass('active') ;
+        var index = $(this).index();
+        $("ul.forminfo").eq(index).show().siblings(".forminfo").hide();
+    });
+     $(".formtitle span").eq(0).click();
+</script>
+
+</html>
