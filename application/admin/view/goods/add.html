@@ -89,15 +89,23 @@
 
             <ul class="forminfo">
                 <li>
-                    <label>商品属性</label>
-                    <input name="" placeholder="请输入商品名称" type="text" class="dfinput" /><i>名称不能超过30个字符</i>
+                    <label>选择商品类型</label>
+                    <select name="type_id" class="dfinput">
+                        <option value="">请选择商品类型</option>
+                        {foreach name='types' item='type'}
+                            <option value="{$type.type_id}">{$type.type_name}</option>
+                        {/foreach}
+                    </select>
+                    <!--存放生成属性的容器-->
+                    <li id="attrContains"></li>
+
                 </li>
             </ul>
 
             <ul class="forminfo">
                 <li>
                     <a href="javascript:;" onclick="cloneImg(this)">[+]</a>&nbsp;&nbsp;
-                    <input name="img[]" type="file"/>
+                    <input name="img[]" type='file' />
                 </li>
             </ul>
 
@@ -116,6 +124,81 @@
     </div>
 </body>
 <script>
+
+    // 单选属性克隆
+    function cloneAttr(ele) {
+        var text = $(ele).html();
+        if (text == '[+]'){
+            // 是[+]的时候
+            // 克隆父元素li  并把a标签的[+]变为[-]
+            // console.log($(ele).parent());
+            var newLi = $(ele).parent().clone();
+            newLi.children('a').html('[-]');
+            // 清空value
+            newLi.children('input').val('');
+            // 把newLi 追加到当前元素父元素后面
+            $(ele).parent().after(newLi);
+        }else {
+            // 是[-]的时候
+            $(ele).parent().remove();
+        }
+    }
+    // 切换类型  获取属性
+    $("select[name='type_id']").on('change', function () {
+        // 获取选择的类型的type_id 的值
+        var type_id = $(this).val();
+
+        // 发送Ajax 获取指定类型的所有属性
+        var html = "";
+        $.get("{:url('/admin/goods/getTypeAttr')}", {"type_id":type_id}, function (res) {
+            html += "<ul>";
+            // 循环拼接li
+            for (var i=0,length=res.length;i<length;i++){
+                // 每个属性都是一个li标签
+                html += "<li>";
+                // 1.单选属性 前面有[+]
+                if (res[i].attr_type == 1){
+                    html += "<a href='javascript:;' onclick='cloneAttr(this)'>[+]</a>";
+                }
+
+                // 2. 拼接属性名称
+                html += res[i].attr_name + '&nbsp;&nbsp;&nbsp;';
+
+                // 3.判断属性的录入方式
+                // 单选属性表单name后面要拼接[]  唯一属性不需要
+                var hasManyValue = res[i].attr_type == 1?'[]':'';
+                if (res[i].attr_input_type == 0){
+                    // 手工输入
+                    html += "<input name='goodsAttrValue["+res[i].attr_id+"]"+hasManyValue+"' type='text' class='dfinput' placeholder='请输入属性值'/>";
+
+                }else {
+                    // 列表选择 attr_values  黑色|土豪金
+                    var attr_values = res[i].attr_values;
+                    // 分割属性
+                    var attr_values = attr_values.split('|');
+                    // console.log(attr_values);
+                    html += "<select name='goodsAttrValue["+res[i].attr_id+"]"+hasManyValue+"' class='dfinput' >";
+                    // 循环创建option标签
+                    for (var j=0; j<attr_values.length; j++){
+                        html += "<option value='"+attr_values[j]+"'>"+attr_values[j]+"</option>";
+                    }
+                    html += "</select>";
+                    // console.log(html);
+                }
+
+                // 4.单选属性需要拼接价格的输入框
+                if (res[i].attr_type == 1){
+                    html += "属性价格：<input name='goodsAttrPrice["+res[i].attr_id+"][]' type='text' class='dfinput' placeholder='请输入价格' />";
+                }
+                html += "</li>";
+            }
+            html += "</ul>";
+
+            // 把最终拼接好的url放在属性容器里面
+            $("#attrContains").html(html);
+        },'json');
+    });
+
 
     // 克隆图片
     function cloneImg(ele) {

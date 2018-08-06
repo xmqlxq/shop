@@ -20,6 +20,8 @@ Route::group('admin', function (){
 
     /********************  商 品   **********************/
     // 分类列表
+    Route::get('goods/getTypeAttr', 'admin/goods/getTypeAttr');
+    // 分类列表
     Route::get('goods/index', 'admin/goods/index');
     // 分类新增
     Route::any('goods/add', 'admin/goods/add');
