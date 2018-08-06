@@ -12,8 +12,13 @@
 
 use think\Route;
 
-Route::get('/', 'admin/index/index');
+Route::get('/', 'home/index/index');
 Route::get('ht', 'admin/index/index');
+
+// 前台home分组路由
+Route::group('home', function (){
+    Route::get('index/index', 'home/index/index');
+});
 
 // 后台admin分组路由
 Route::group('admin', function (){
